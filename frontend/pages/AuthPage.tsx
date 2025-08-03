@@ -40,7 +40,7 @@ export default function AuthPage() {
       console.error('Auth error:', error);
       toast({
         title: "Error",
-        description: isLogin ? "Invalid credentials" : "Registration failed",
+        description: error instanceof Error ? error.message : (isLogin ? "Invalid credentials" : "Registration failed"),
         variant: "destructive",
       });
     } finally {

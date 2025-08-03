@@ -59,11 +59,7 @@ AI-powered background removal mobile application built with Flutter and Encore.t
 
 4. **Configure API endpoints**
    
-   Update `lib/core/config/app_config.dart`:
-   ```dart
-   static const String baseUrl = 'https://your-encore-backend-url.com';
-   static const String stripePublishableKey = 'pk_live_your_stripe_key';
-   ```
+   Follow the instructions in the [Configuration](#configuration) section to point the Flutter app and the web app to your Encore backend URL.
 
 5. **Run the app**
    ```bash
@@ -85,9 +81,21 @@ AI-powered background removal mobile application built with Flutter and Encore.t
    - Configure database and storage
 
 2. **Update API Configuration**
+
+   Make sure both the Flutter app and the web frontend point to the same backend instance.
+
+   **Flutter App:**
+   Update `lib/core/config/app_config.dart`:
    ```dart
    // lib/core/config/app_config.dart
    static const String baseUrl = 'https://your-backend-url.com';
+   ```
+
+   **Web App:**
+   Update `frontend/.env.development`:
+   ```
+   # frontend/.env.development
+   VITE_CLIENT_TARGET=https://your-backend-url.com
    ```
 
 ### Stripe Configuration
