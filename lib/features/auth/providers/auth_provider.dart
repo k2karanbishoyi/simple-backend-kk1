@@ -106,7 +106,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         error: _getErrorMessage(e),
       );
-      rethrow;
     }
   }
 
@@ -137,7 +136,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         error: _getErrorMessage(e),
       );
-      rethrow;
     }
   }
 
