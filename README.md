@@ -72,6 +72,12 @@ AI-powered background removal mobile application built with Flutter and Encore.t
 
 ## Configuration
 
+### Unified Backend and Database
+
+The project is designed with a single backend that serves both the Flutter mobile app and the React web app. This ensures that all data, including user accounts, images, and subscriptions, is stored in a unified database.
+
+To ensure both frontends work correctly and share the same data, they **must** be configured to point to the **same deployed backend URL**.
+
 ### Backend Setup
 
 1. **Deploy Encore.ts Backend**
@@ -80,23 +86,23 @@ AI-powered background removal mobile application built with Flutter and Encore.t
    - Set up Stripe webhooks
    - Configure database and storage
 
-2. **Update API Configuration**
+### Connecting Frontends to Backend
 
-   Make sure both the Flutter app and the web frontend point to the same backend instance.
+Make sure both the Flutter app and the web frontend point to the same backend instance.
 
-   **Flutter App:**
-   Update `lib/core/config/app_config.dart`:
-   ```dart
-   // lib/core/config/app_config.dart
-   static const String baseUrl = 'https://your-backend-url.com';
-   ```
+**Flutter App:**
+Update `lib/core/config/app_config.dart`:
+```dart
+// lib/core/config/app_config.dart
+static const String baseUrl = 'https://your-backend-url.com';
+```
 
-   **Web App:**
-   Update `frontend/.env.development`:
-   ```
-   # frontend/.env.development
-   VITE_CLIENT_TARGET=https://your-backend-url.com
-   ```
+**Web App:**
+Update `frontend/.env.development`:
+```
+# frontend/.env.development
+VITE_CLIENT_TARGET=https://your-backend-url.com
+```
 
 ### Stripe Configuration
 

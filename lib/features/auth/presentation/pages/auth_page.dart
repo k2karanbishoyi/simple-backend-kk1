@@ -228,12 +228,12 @@ class _AuthPageState extends ConsumerState<AuthPage> {
       if (_isLogin) {
         await ref.read(authProvider.notifier).login(
               _emailController.text.trim(),
-              _passwordController.text,
+              _passwordController.text.trim(),
             );
       } else {
         await ref.read(authProvider.notifier).register(
               _emailController.text.trim(),
-              _passwordController.text,
+              _passwordController.text.trim(),
             );
       }
     } catch (e) {
