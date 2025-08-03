@@ -168,22 +168,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
         case DioExceptionType.receiveTimeout:
           return 'Request timeout. Please check your connection and try again.';
         case DioExceptionType.badResponse:
-          // This is for non-2xx responses. The message should be from the backend.
+          // The interceptor should have already extracted the message from the backend.
           if (error.message != null && error.message!.isNotEmpty) {
-            final errorMessage = error.message!.toLowerCase();
-            if (errorMessage.contains('already exists')) {
-              return 'An account with this email already exists';
-            } else if (errorMessage.contains('invalid email format')) {
-              return 'Please enter a valid email address';
-            } else if (errorMessage.contains('password must be at least 6 characters long')) {
-              return 'Password must be at least 6 characters long';
-            } else if (errorMessage.contains('invalid email or password')) {
-              return 'Invalid email or password';
-            }
-            // Return the server message directly if it's not one of the above
             return error.message!;
           }
-          break; // Fall through to generic message
+          return 'An unknown error occurred with the server response.';
         case DioExceptionType.cancel:
           return 'Request was canceled.';
         case DioExceptionType.connectionError:

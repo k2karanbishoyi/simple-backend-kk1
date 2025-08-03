@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,16 +42,23 @@ final dioProvider = Provider<Dio>((ref) {
         
         // Transform DioException to a more readable format
         if (error.response?.data != null) {
-          final data = error.response!.data;
-          if (data is Map<String, dynamic> && data.containsKey('message')) {
-            final newError = DioException(
-              requestOptions: error.requestOptions,
-              response: error.response,
-              type: error.type,
-              message: data['message'],
-            );
-            handler.next(newError);
-            return;
+          try {
+            final data = error.response!.data is String
+                ? jsonDecode(error.response!.data)
+                : error.response!.data;
+
+            if (data is Map<String, dynamic> && data.containsKey('message')) {
+              final newError = DioException(
+                requestOptions: error.requestOptions,
+                response: error.response,
+                type: error.type,
+                message: data['message'],
+              );
+              handler.next(newError);
+              return;
+            }
+          } catch (e) {
+            print('DIO ERROR: Could not parse error response body: $e');
           }
         }
         
