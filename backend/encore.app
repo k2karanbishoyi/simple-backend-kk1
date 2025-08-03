@@ -1,1 +1,1 @@
-{"id": "hello-backend-cg2i", "lang": "typescript"}
+{"id": "simple-backend-rmgi", "lang": "typescript"}

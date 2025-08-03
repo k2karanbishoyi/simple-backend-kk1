@@ -34,6 +34,7 @@ const BROWSER = typeof globalThis === "object" && ("window" in globalThis);
  */
 export class Client {
     public readonly auth: auth.ServiceClient
+    public readonly frontend: frontend.ServiceClient
     public readonly images: images.ServiceClient
     public readonly subscriptions: subscriptions.ServiceClient
     public readonly users: users.ServiceClient
@@ -52,6 +53,7 @@ export class Client {
         this.options = options ?? {}
         const base = new BaseClient(this.target, this.options)
         this.auth = new auth.ServiceClient(base)
+        this.frontend = new frontend.ServiceClient(base)
         this.images = new images.ServiceClient(base)
         this.subscriptions = new subscriptions.ServiceClient(base)
         this.users = new users.ServiceClient(base)
@@ -118,6 +120,27 @@ export namespace auth {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/auth/register`, {method: "POST", body: JSON.stringify(params)})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_auth_register_register>
+        }
+    }
+}
+
+/**
+ * Import the endpoint handlers to derive the types for the client.
+ */
+import { assets as api_frontend_encore_service_assets } from "~backend/frontend/encore.service";
+
+export namespace frontend {
+
+    export class ServiceClient {
+        private baseClient: BaseClient
+
+        constructor(baseClient: BaseClient) {
+            this.baseClient = baseClient
+            this.assets = this.assets.bind(this)
+        }
+
+        public async assets(params: { path: string[] }): Promise<void> {
+            await this.baseClient.callTypedAPI(`/frontend/${params.path.map(encodeURIComponent).join("/")}`, {method: "HEAD", body: undefined})
         }
     }
 }
