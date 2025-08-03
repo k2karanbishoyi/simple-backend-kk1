@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -159,21 +160,45 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   String _getErrorMessage(dynamic error) {
-    final errorString = error.toString().toLowerCase();
-    
-    if (errorString.contains('already exists')) {
-      return 'An account with this email already exists';
-    } else if (errorString.contains('invalid email')) {
-      return 'Please enter a valid email address';
-    } else if (errorString.contains('password must be')) {
-      return 'Password must be at least 6 characters long';
-    } else if (errorString.contains('invalid email or password')) {
-      return 'Invalid email or password';
-    } else if (errorString.contains('network')) {
-      return 'Network error. Please check your connection and try again.';
-    } else if (errorString.contains('timeout')) {
-      return 'Request timeout. Please try again.';
+    if (error is DioException) {
+      // Handle Dio-specific errors
+      switch (error.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          return 'Request timeout. Please check your connection and try again.';
+        case DioExceptionType.badResponse:
+          // This is for non-2xx responses. The message should be from the backend.
+          if (error.message != null && error.message!.isNotEmpty) {
+            final errorMessage = error.message!.toLowerCase();
+            if (errorMessage.contains('already exists')) {
+              return 'An account with this email already exists';
+            } else if (errorMessage.contains('invalid email format')) {
+              return 'Please enter a valid email address';
+            } else if (errorMessage.contains('password must be at least 6 characters long')) {
+              return 'Password must be at least 6 characters long';
+            } else if (errorMessage.contains('invalid email or password')) {
+              return 'Invalid email or password';
+            }
+            // Return the server message directly if it's not one of the above
+            return error.message!;
+          }
+          break; // Fall through to generic message
+        case DioExceptionType.cancel:
+          return 'Request was canceled.';
+        case DioExceptionType.connectionError:
+          return 'Network error. Please check your internet connection.';
+        case DioExceptionType.unknown:
+          if (error.message?.toLowerCase().contains('socketexception') ?? false) {
+            return 'Network error. Please check your internet connection.';
+          }
+          break;
+        case DioExceptionType.badCertificate:
+          return 'Bad certificate. Please contact support.';
+      }
     }
+    
+    // Fallback for non-Dio errors or unhandled Dio errors
     return 'An error occurred. Please try again.';
   }
 
